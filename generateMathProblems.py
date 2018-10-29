@@ -6,9 +6,6 @@ timePerProblem=10.0
 timerLeft=True
 numProb=3
 
-
-
-#BUG WHEN TIME EXPIRE, PROGRAM TERMINATE #resolved
 # Solution? make iterable of math problems
 
 def timeUp():
@@ -61,6 +58,8 @@ def testUserMulti():
 count=0
 print('you will have to solve',numProb,'problems\n')
 for i in range(numProb):
+    input('Hit any key when ready')
     testUserMulti()
+    print('')
 
 print('Your score was',str(count*100/numProb)+'%')
