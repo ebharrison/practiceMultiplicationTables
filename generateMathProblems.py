@@ -2,10 +2,13 @@ from random import *
 import threading
 import os
 #make mode make time test
-timePerProblem=5.0
+timePerProblem=10.0
 timerLeft=True
+numProb=3
 
-#BUG WHEN TIME EXPIRE, PROGRAM TERMINATE
+
+
+#BUG WHEN TIME EXPIRE, PROGRAM TERMINATE #resolved
 # Solution? make iterable of math problems
 
 def timeUp():
@@ -54,62 +57,10 @@ def testUserMulti():
         print('the answer was ',problem[0]*problem[1],'\n')
         t.cancel()
 
-numProb=5
+
 count=0
 print('you will have to solve',numProb,'problems\n')
 for i in range(numProb):
     testUserMulti()
 
 print('Your score was',str(count*100/numProb)+'%')
-
-
-
-# makeProb()
-# timer=threading.Timer(6.0,timeUp)
-# timer.start()
-# while True:
-#     print(problem)
-#     ans=input('Enter the product\n')
-#     print('got this as ans',ans)
-#     try:
-#         ans=input(ans)
-#     except TypeError:
-#         if ans=='':
-#             pass
-#         elif ans=='end':
-#             break
-#         else:
-#             print('Invalid input')
-#             continue
-#     if ans==problem[0]*problem[1]:
-#         print('Righty-O!')
-#         timer.cancel()
-#         makeProb()
-#     else:
-#         print('sorry ')
-#         timer.cancel()
-#         makeProb()
-
-# while True:
-#     global problem
-#     problem=(randint(1,12),randint(1,12))
-#
-#     try:
-#         print(problem)
-#         timer=threading.Timer(5.0,timeUp)
-#         timer.start()
-#         ans=input('Enter the product\n')
-#         if ans=='end':
-#             break
-#         ans=int(ans)
-#     except ValueError:
-#         print('')
-#         print('That wasn\'t a integer\n')
-#         print('')
-#     else:
-#         if timeLimit==True and ans==problem[0]*problem[1]:
-#             timer.cancel()
-#             print('')
-#             print('Correct!')
-#         else:
-#             print('not quite. The answer is ',problem[0]*problem[1])
