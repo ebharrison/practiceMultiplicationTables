@@ -6,6 +6,8 @@ timePerProblem=10.0
 timerLeft=True
 numProb=3
 
+#THIS WILL ONLY BE ON MACHINELEARN BRANCH
+
 # Solution? make iterable of math problems
 
 def timeUp():
