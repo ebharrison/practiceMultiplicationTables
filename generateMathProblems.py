@@ -8,7 +8,9 @@ numProb=3
 
 #THIS WILL ONLY BE ON MACHINELEARN BRANCH
 
-# Solution? make iterable of math problems
+#time user to do all problems? or make timer for whole problem set?
+#todo machine learn make dict and add pairs as needed
+#after machine learn, write out to file and read in for user
 
 def timeUp():
     #os.system('clear')
@@ -52,7 +54,7 @@ def testUserMulti():
         count+=1
         t.cancel()
     else:
-        print('\nsorry, but keep trying\n')
+        print('sorry, but keep trying')
         print('the answer was ',problem[0]*problem[1],'\n')
         t.cancel()
 
@@ -60,7 +62,7 @@ def testUserMulti():
 count=0
 print('you will have to solve',numProb,'problems\n')
 for i in range(numProb):
-    input('Hit any key when ready')
+    input('Hit any key when ready\n')
     testUserMulti()
     print('')
 
