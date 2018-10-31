@@ -6,8 +6,6 @@ timePerProblem=10.0
 timerLeft=True
 numProb=3
 
-#THIS WILL ONLY BE ON MACHINELEARN BRANCH
-
 #time user to do all problems? or make timer for whole problem set?
 #todo machine learn make dict and add pairs as needed
 #after machine learn, write out to file and read in for user
