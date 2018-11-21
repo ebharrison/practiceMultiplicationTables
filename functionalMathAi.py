@@ -1,14 +1,22 @@
-from random import *
+import random
 import threading
 import os
 #make mode make time test
-timePerProblem=10.0
+timePerProblem=5.0
 timerLeft=True
-numProb=3
+numProb=10
+upperBound=12
+lowerBound=1
+wrongProblems=[]
+#initalize wrong problems to have on copy of every possibility
+for i in range(lowerBound,upperBound+1):
+    for j in range(lowerBound,upperBound+1):
+        wrongProblems.append((i,j))
 
 #time user to do all problems? or make timer for whole problem set?
 #todo machine learn make dict and add pairs as needed
 #after machine learn, write out to file and read in for user
+#write out percents to file and extrapolate info from data
 
 def timeUp():
     #os.system('clear')
@@ -19,7 +27,7 @@ def timeUp():
 
 def makeProb():
     global problem
-    problem=(randint(1,12),randint(1,12))
+    problem=random.choice(wrongProblems)
 
 def makeTimer():
     global timePerProblem
@@ -47,19 +55,25 @@ def testUserMulti():
                     pass
 
     if timerLeft==True and ans==problem[0]*problem[1]:
+        t.cancel()
         print('\nRighty-O!\n')
         global count
         count+=1
-        t.cancel()
+        try:
+            wrongProblems.remove(problem)
+        except:
+            wrongProblems.append(problem)
     else:
+        t.cancel()
         print('sorry, but keep trying')
         print('the answer was ',problem[0]*problem[1],'\n')
-        t.cancel()
+        wrongProblems.append(problem)
 
 
 count=0
 print('you will have to solve',numProb,'problems\n')
 for i in range(numProb):
+    #print(wrongProblems)
     input('Hit any key when ready\n')
     testUserMulti()
     print('')
