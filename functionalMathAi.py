@@ -1,80 +1,78 @@
 import random
-import threading
+import time
 import os
-#make mode make time test
-timePerProblem=5.0
-timerLeft=True
-numProb=10
-upperBound=12
-lowerBound=1
-wrongProblems=[]
-#initalize wrong problems to have on copy of every possibility
-for i in range(lowerBound,upperBound+1):
-    for j in range(lowerBound,upperBound+1):
-        wrongProblems.append((i,j))
+import time
 
-#time user to do all problems? or make timer for whole problem set?
-#todo machine learn make dict and add pairs as needed
-#after machine learn, write out to file and read in for user
-#write out percents to file and extrapolate info from data
+#ignore menu screen for now
+#straight to problems
 
-def timeUp():
-    #os.system('clear')
-    global timerLeft
-    timerLeft=False
-    print('times up!')
-    print('the answer was ',problem[0]*problem[1])
+number_problems=3
+time_per_problem=5
+#bounds are inclusive
+lower_bound=1
+upper_bound=12
 
-def makeProb():
-    return random.choice(wrongProblems)
+wrong_problems=[]
+#initalize wrong problems to have one copy of every possibility
+#inclusive bounds
+for i in range(lower_bound,upper_bound+1):
+    for j in range(lower_bound,upper_bound+1):
+        wrong_problems.append((i,j))
 
-def makeTimer():
-    global timePerProblem
-    return threading.Timer(timePerProblem,timeUp)
+def make_problem():
+    return random.choice(wrong_problems)
 
-def testUserMulti():
-    global timerLeft
-    global problem
-    makeProb()
+def solve_problem(problem):
+    #problem is a tuple
+    return problem[0]*problem[1]
+
+count_correct_solutions=0
+for i in range(number_problems):
+    #code to do each problem
+    problem = make_problem()
     print(problem)
     print('product?')
-    t=makeTimer()
-    t.start()
+    start_time=time.time()
+    #test that input only consists of integer digits of any length
+    #assume false input
+    user_answer=1
     invalid=True
     while invalid:
         try:
-            ans=''
-            ans=int(input())
+            #cast input to integer
+            #if fails, then contains non-integer character
+            user_answer=int(input())
             invalid=False
         except ValueError:
-            if ans=='':
-                if timerLeft==False:
-                    return
-                else:
-                    pass
+            print('invalid input, please try again')
 
-    if timerLeft==True and ans==problem[0]*problem[1]:
-        t.cancel()
-        print('\nRighty-O!\n')
-        global count
-        count+=1
-        try:
-            wrongProblems.remove(problem)
-        except:
-            wrongProblems.append(problem)
+    #must check if timer has expired
+    time_elapsed=time.time()-start_time
+
+    if time_elapsed < time_per_problem:
+        """
+            user provided solution
+            the amount of time elapsed is less then alloted time per problem
+            check if user solution is correct
+        """
+        if user_answer==solve_problem(problem):
+            #user gave correct solution
+            print('righty-o')
+            count_correct_solutions+=1
+        else:
+            #time left but user gave wrong solution
+            print('sorry that isn\'t right')
+            print('the answer was',solve_problem(problem))
     else:
-        t.cancel()
-        print('sorry, but keep trying')
-        print('the answer was ',problem[0]*problem[1],'\n')
-        wrongProblems.append(problem)
+        print('sorry but you ran out of time')
+        if user_answer==solve_problem(problem):
+            #user gave correct solution
+            print('You were correct')
+        else:
+            #time left but user gave wrong solution
+            print('sorry that isn\'t right')
+            print('the answer was',solve_problem(problem))
+    print('\n')
 
-
-count=0
-print('you will have to solve',numProb,'problems\n')
-for i in range(numProb):
-    #print(wrongProblems)
-    input('Hit any key when ready\n')
-    testUserMulti()
-    print('')
-
-print('Your score was',str(count*100/numProb)+'%')
+print('Final Score: {}%'.format( round( ( (
+    count_correct_solutions/number_problems)*100.0),2) ) )
