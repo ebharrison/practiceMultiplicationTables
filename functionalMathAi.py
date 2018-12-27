@@ -26,8 +26,7 @@ def timeUp():
     print('the answer was ',problem[0]*problem[1])
 
 def makeProb():
-    global problem
-    problem=random.choice(wrongProblems)
+    return random.choice(wrongProblems)
 
 def makeTimer():
     global timePerProblem
