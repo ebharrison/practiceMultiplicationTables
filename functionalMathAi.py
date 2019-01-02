@@ -57,6 +57,12 @@ class Application(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
+    def show_and_update_frame(self, page_name):
+        '''Show and update a frame for the given page name'''
+        frame = self.frames[page_name]
+        frame.update()
+        frame.tkraise()
+
     def get_page(self,page_class):
         return self.frames[page_class]
 
@@ -114,6 +120,19 @@ class problem_page(tk.Frame):
     problem = make_problem(wrong_problems)
     correct_answer = solve_problem(problem)
 
+    prompt='Label'
+    input_box='Entry'
+    error_box='Label'
+
+    def validate(self,name,mode):
+        ans=problem_page.user_answer.get()
+        try:
+            if ans:
+                int(ans)
+            problem_page.error_box.config(text='')
+        except ValueError:
+            problem_page.error_box.config(text='invalid input')
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -125,43 +144,48 @@ class problem_page(tk.Frame):
             One label is used to display all problems. The text on the label is
             changed every time to display the new problem
         '''
-        prompt = tk.Label(self, text='error:problem not displaying', font=controller.title_font)
-        prompt.pack(side="top", fill="x", pady=10)
+        problem_page.prompt = tk.Label(self, text='error:problem not displaying', font=controller.title_font)
+        problem_page.prompt.pack(side="top", fill="x", pady=10)
 
-        error_box = tk.Label(self, text='', font=controller.title_font)
-        error_box.pack(side="top", fill="x", pady=10)
+        problem_page.error_box = tk.Label(self, text='', font=controller.title_font)
+        problem_page.error_box.pack(side="top", fill="x", pady=10)
 
-        def validate(self,name,mode):
-            ans=user_answer.get()
-            try:
-                if ans:
-                    int(ans)
-                error_box.config(text='')
-            except ValueError:
-                error_box.config(text='invalid input')
         problem_page.user_answer=tk.StringVar()
         user_answer=problem_page.user_answer
-        user_answer.trace('w', validate)
+        user_answer.trace('w', problem_page.validate)
 
-        input_box=tk.Entry(self,textvariable=user_answer)
-        input_box.pack(side="top", fill="x", pady=10)
-        input_box.focus()
+        problem_page.input_box=tk.Entry(self,textvariable=problem_page.user_answer)
+        problem_page.input_box.pack(side="top", fill="x", pady=10)
+        problem_page.input_box.focus()
 
         '''
             i think i need to bind return to entry box and then grade. Question then
             becomes of how to repeat, but we'll figure that out later
         '''
 
-        prompt.config(text=problem_page.format_problem(problem_page.problem))
+        problem_page.prompt.config(text=problem_page.format_problem(problem_page.problem))
 
         problem_page.start_time=time.time()
 
         def update_answer_page():
-            answer_page.grade()
+            answer_page.update()
             controller.show_frame("answer_page")
 
         submit_button = tk.Button(self, text="Grade", command=update_answer_page)
         submit_button.pack()
+
+    def update(self):
+        problem_page.user_answer=tk.StringVar()
+        problem_page.user_answer.trace('w', problem_page.validate)
+
+        problem_page.input_box.config(textvariable=problem_page.user_answer)
+        problem_page.input_box.focus()
+
+        problem_page.problem = problem_page.make_problem(problem_page.wrong_problems)
+        problem_page.correct_answer = problem_page.solve_problem(problem_page.problem)
+
+        problem_page.prompt.config(text=problem_page.format_problem(problem_page.problem))
+        problem_page.start_time=time.time()
 
 
 class answer_page(tk.Frame):
@@ -182,16 +206,17 @@ class answer_page(tk.Frame):
         answer_page.solution=tk.Label(self,text="solution")
         answer_page.solution.pack()
 
+        repeat_button=tk.Button(self,text="Again",
+            command=lambda: controller.show_and_update_frame("problem_page"))
+        repeat_button.pack()
 
-    def grade():
+    def update():
         #print(problem_page.user_answer.get())
         problem=problem_page.format_problem(problem_page.problem)
         user_answer=int(problem_page.user_answer.get())
         correct_answer=problem_page.correct_answer
         start_time=problem_page.start_time
         time_elapsed=time.time()-start_time
-
-        print("time elapsed is",time_elapsed)
 
         if time_elapsed<problem_page.time_per_problem:
             if user_answer==correct_answer:
