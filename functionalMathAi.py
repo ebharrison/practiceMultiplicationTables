@@ -16,6 +16,11 @@ import time
         -Progress bar
 '''
 
+'''
+    General Notes:
+    -bind <return> to to grade button to do same thing as hitting button
+'''
+
 
 class Application(tk.Tk):
 
@@ -86,8 +91,12 @@ class problem_page(tk.Frame):
         #problem is a tuple
         return problem[0]*problem[1]
 
+    def format_problem(problem):
+        #problem is a tuple
+        return str(problem[0])+' times '+str(problem[1])
+
     user_answer=-1
-    start_time=0
+    start_time=-1
 
     number_problems=3
     time_per_problem=5
@@ -103,7 +112,7 @@ class problem_page(tk.Frame):
             wrong_problems.append((i,j))
 
     problem = make_problem(wrong_problems)
-
+    correct_answer = solve_problem(problem)
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -143,64 +152,23 @@ class problem_page(tk.Frame):
             becomes of how to repeat, but we'll figure that out later
         '''
 
-        count_correct_solutions=0
+        prompt.config(text=problem_page.format_problem(problem_page.problem))
 
-        def format_problem(problem):
-            #problem is a tuple
-            return str(problem[0])+' times '+str(problem[1])
-
-        prompt.config(text=format_problem(problem_page.problem))
-
-        start_time=time.time()
+        problem_page.start_time=time.time()
 
         def update_answer_page():
             answer_page.grade()
             controller.show_frame("answer_page")
 
-        # submit_button = tk.Button(self, text="Grade",
-        #                    command=lambda: controller.show_frame("answer_page"))
-
         submit_button = tk.Button(self, text="Grade", command=update_answer_page)
         submit_button.pack()
 
-
-        # #must check if timer has expired
-        # time_elapsed=time.time()-start_time
-        #
-        # if time_elapsed < time_per_problem:
-        #     """
-        #         user provided solution
-        #         the amount of time elapsed is less then alloted time per problem
-        #         check if user solution is correct
-        #     """
-        #     if user_answer==solve_problem(problem):
-        #         #user gave correct solution
-        #         print('righty-o')
-        #         count_correct_solutions+=1
-        #     else:
-        #         #time left but user gave wrong solution
-        #         print('sorry that isn\'t right')
-        #         print('the answer was',solve_problem(problem))
-        # else:
-        #     print('sorry but you ran out of time')
-        #     if user_answer==solve_problem(problem):
-        #         #user gave correct solution
-        #         print('You were correct')
-        #     else:
-        #         #time left but user gave wrong solution
-        #         print('sorry that isn\'t right')
-        #         print('the answer was',solve_problem(problem))
-
-
-
-        # button = tk.Button(self, text="Go to the start page",
-        #                    command=lambda: controller.show_frame("StartPage"))
-        # button.pack()
 
 class answer_page(tk.Frame):
 
     response='label'
     solution='label'
+    count_correct_solutions=0
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -208,15 +176,63 @@ class answer_page(tk.Frame):
 
 
         #two labels
-        response=tk.Label(self,text="response")
-        response.pack()
+        answer_page.response=tk.Label(self,text="response")
+        answer_page.response.pack()
 
-        solution=tk.Label(self,text="solution")
-        solution.pack()
+        answer_page.solution=tk.Label(self,text="solution")
+        answer_page.solution.pack()
 
 
     def grade():
-        print(problem_page.user_answer.get())
+        #print(problem_page.user_answer.get())
+        problem=problem_page.format_problem(problem_page.problem)
+        user_answer=int(problem_page.user_answer.get())
+        correct_answer=problem_page.correct_answer
+        start_time=problem_page.start_time
+        time_elapsed=time.time()-start_time
+
+        print("time elapsed is",time_elapsed)
+
+        if time_elapsed<problem_page.time_per_problem:
+            if user_answer==correct_answer:
+                # user gave correct solution
+                answer_page.response.config(text="Correct!")
+                answer_page.solution.config(text=problem+" is "+str(correct_answer))
+                answer_page.count_correct_solutions+=1
+            else:
+                #user gave wrong solution
+                answer_page.response.config(text="Sorry, that was not correct")
+                answer_page.solution.config(text=problem+" is "+str(correct_answer))
+        else:
+            answer_page.response.config(text="You ran out of time")
+            answer_page.solution.config(text=problem+" is "+str(correct_answer))
+
+
+                # #must check if timer has expired
+                #
+                # if time_elapsed < time_per_problem:
+                #     """
+                #         user provided solution
+                #         the amount of time elapsed is less then alloted time per problem
+                #         check if user solution is correct
+                #     """
+                #     if user_answer==solve_problem(problem):
+                #         #user gave correct solution
+                #         print('righty-o')
+                #         count_correct_solutions+=1
+                #     else:
+                #         #time left but user gave wrong solution
+                #         print('sorry that isn\'t right')
+                #         print('the answer was',solve_problem(problem))
+                # else:
+                #     print('sorry but you ran out of time')
+                #     if user_answer==solve_problem(problem):
+                #         #user gave correct solution
+                #         print('You were correct')
+                #     else:
+                #         #time left but user gave wrong solution
+                #         print('sorry that isn\'t right')
+                #         print('the answer was',solve_problem(problem))
 
 if __name__ == "__main__":
     app = Application()
