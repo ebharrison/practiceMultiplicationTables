@@ -40,7 +40,7 @@ class Application(tk.Tk):
 
         self.frames = {}
         #WHERE YOU PUT ALL PAGES
-        for F in (StartPage, problem_page, answer_page):
+        for F in (StartPage, problem_page, answer_page, statistic_page):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -77,12 +77,8 @@ class StartPage(tk.Frame):
         label.pack(side="top", fill="x", pady=10)
 
         button1 = tk.Button(self, text="Go to Problem One",
-                            command=lambda: controller.show_frame("problem_page"))
+                            command=lambda: controller.show_and_update_frame("problem_page"))
         button1.pack()
-
-        # button2 = tk.Button(self, text="Go to Page Two",
-        #                     command=lambda: controller.show_frame("PageTwo"))
-        # button2.pack()
 
 
 class problem_page(tk.Frame):
@@ -117,8 +113,8 @@ class problem_page(tk.Frame):
         for j in range(lower_bound,upper_bound+1):
             wrong_problems.append((i,j))
 
-    problem = make_problem(wrong_problems)
-    correct_answer = solve_problem(problem)
+    problem = 'tuple'
+    correct_answer = 'integer product of tuple,problem, '
 
     prompt='Label'
     input_box='Entry'
@@ -190,14 +186,17 @@ class problem_page(tk.Frame):
 
 class answer_page(tk.Frame):
 
-    response='label'
-    solution='label'
+    response='Label'
+    solution='Label'
     count_correct_solutions=0
+    repeat_button='Button'
+    controller='Controller'
+    problem_count=0
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
+        statistic_page.controller = controller
 
         #two labels
         answer_page.response=tk.Label(self,text="response")
@@ -206,58 +205,51 @@ class answer_page(tk.Frame):
         answer_page.solution=tk.Label(self,text="solution")
         answer_page.solution.pack()
 
-        repeat_button=tk.Button(self,text="Again",
+        answer_page.repeat_button=tk.Button(self,text="Again",
             command=lambda: controller.show_and_update_frame("problem_page"))
-        repeat_button.pack()
+        answer_page.repeat_button.pack()
 
     def update():
-        #print(problem_page.user_answer.get())
         problem=problem_page.format_problem(problem_page.problem)
         user_answer=int(problem_page.user_answer.get())
         correct_answer=problem_page.correct_answer
         start_time=problem_page.start_time
         time_elapsed=time.time()-start_time
 
-        if time_elapsed<problem_page.time_per_problem:
-            if user_answer==correct_answer:
-                # user gave correct solution
-                answer_page.response.config(text="Correct!")
-                answer_page.solution.config(text=problem+" is "+str(correct_answer))
-                answer_page.count_correct_solutions+=1
-            else:
-                #user gave wrong solution
-                answer_page.response.config(text="Sorry, that was not correct")
-                answer_page.solution.config(text=problem+" is "+str(correct_answer))
+        #print('problem count',answer_page.problem_count)
+        answer_page.problem_count+=1
+        if answer_page.problem_count>=problem_page.number_problems:
+            answer_page.repeat_button.config(command=lambda:
+                statistic_page.controller.show_and_update_frame('statistic_page'))
         else:
-            answer_page.response.config(text="You ran out of time")
-            answer_page.solution.config(text=problem+" is "+str(correct_answer))
+            if time_elapsed<problem_page.time_per_problem:
+                if user_answer==correct_answer:
+                    # user gave correct solution
+                    answer_page.response.config(text="Correct!")
+                    answer_page.solution.config(text=problem+" is "+str(correct_answer))
+                    answer_page.count_correct_solutions+=1
+                else:
+                    #user gave wrong solution
+                    answer_page.response.config(text="Sorry, that was not correct")
+                    answer_page.solution.config(text=problem+" is "+str(correct_answer))
+            else:
+                answer_page.response.config(text="You ran out of time")
+                answer_page.solution.config(text=problem+" is "+str(correct_answer))
 
+class statistic_page(tk.Frame):
 
-                # #must check if timer has expired
-                #
-                # if time_elapsed < time_per_problem:
-                #     """
-                #         user provided solution
-                #         the amount of time elapsed is less then alloted time per problem
-                #         check if user solution is correct
-                #     """
-                #     if user_answer==solve_problem(problem):
-                #         #user gave correct solution
-                #         print('righty-o')
-                #         count_correct_solutions+=1
-                #     else:
-                #         #time left but user gave wrong solution
-                #         print('sorry that isn\'t right')
-                #         print('the answer was',solve_problem(problem))
-                # else:
-                #     print('sorry but you ran out of time')
-                #     if user_answer==solve_problem(problem):
-                #         #user gave correct solution
-                #         print('You were correct')
-                #     else:
-                #         #time left but user gave wrong solution
-                #         print('sorry that isn\'t right')
-                #         print('the answer was',solve_problem(problem))
+    response='Label'
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        statistic_page.response=tk.Label(self,text="score not displaying")
+        statistic_page.response.pack()
+
+    def update(self):
+        score=answer_page.count_correct_solutions*100/problem_page.number_problems
+        statistic_page.response.config(text="Your score is "+str( round(score,2) )+"%")
 
 if __name__ == "__main__":
     app = Application()
