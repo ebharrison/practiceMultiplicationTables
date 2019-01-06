@@ -23,6 +23,11 @@ import time
 
 
 class Application(tk.Tk):
+    def show_and_update_frame(self, page_name):
+        '''Show and update a frame for the given page name'''
+        frame = self.frames[page_name]
+        frame.update()
+        frame.tkraise()
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -52,15 +57,13 @@ class Application(tk.Tk):
 
         self.show_frame("StartPage")
 
+        self.bind('<Return>',lambda anon: self.show_and_update_frame('answer_page'))
+
+
+
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
-        frame.tkraise()
-
-    def show_and_update_frame(self, page_name):
-        '''Show and update a frame for the given page name'''
-        frame = self.frames[page_name]
-        frame.update()
         frame.tkraise()
 
     def get_page(self,page_class):
@@ -152,7 +155,7 @@ class problem_page(tk.Frame):
 
         problem_page.input_box=tk.Entry(self,textvariable=problem_page.user_answer)
         problem_page.input_box.pack(side="top", fill="x", pady=10)
-        problem_page.input_box.focus()
+        #problem_page.input_box.focus()
 
         '''
             i think i need to bind return to entry box and then grade. Question then
@@ -163,11 +166,11 @@ class problem_page(tk.Frame):
 
         problem_page.start_time=time.time()
 
-        def update_answer_page():
-            answer_page.update()
-            controller.show_frame("answer_page")
+        # def update_answer_page():
+        #     answer_page.update()
+        #     controller.show_frame("answer_page")
 
-        submit_button = tk.Button(self, text="Grade", command=update_answer_page)
+        submit_button = tk.Button(self, text="Grade", command=lambda:controller.show_and_update_frame("answer_page"))
         submit_button.pack()
 
     def update(self):
@@ -209,7 +212,7 @@ class answer_page(tk.Frame):
             command=lambda: controller.show_and_update_frame("problem_page"))
         answer_page.repeat_button.pack()
 
-    def update():
+    def update(self):
         problem=problem_page.format_problem(problem_page.problem)
         user_answer=int(problem_page.user_answer.get())
         correct_answer=problem_page.correct_answer
@@ -221,20 +224,21 @@ class answer_page(tk.Frame):
         if answer_page.problem_count>=problem_page.number_problems:
             answer_page.repeat_button.config(command=lambda:
                 statistic_page.controller.show_and_update_frame('statistic_page'))
-        else:
-            if time_elapsed<problem_page.time_per_problem:
-                if user_answer==correct_answer:
-                    # user gave correct solution
-                    answer_page.response.config(text="Correct!")
-                    answer_page.solution.config(text=problem+" is "+str(correct_answer))
-                    answer_page.count_correct_solutions+=1
-                else:
-                    #user gave wrong solution
-                    answer_page.response.config(text="Sorry, that was not correct")
-                    answer_page.solution.config(text=problem+" is "+str(correct_answer))
-            else:
-                answer_page.response.config(text="You ran out of time")
+
+        if time_elapsed<problem_page.time_per_problem:
+            if user_answer==correct_answer:
+                # user gave correct solution
+                answer_page.response.config(text="Correct!")
                 answer_page.solution.config(text=problem+" is "+str(correct_answer))
+                answer_page.count_correct_solutions+=1
+            else:
+                #user gave wrong solution
+                answer_page.response.config(text="Sorry, that was not correct")
+                answer_page.solution.config(text=problem+" is "+str(correct_answer))
+        else:
+            answer_page.response.config(text="You ran out of time")
+            answer_page.solution.config(text=problem+" is "+str(correct_answer))
+            
 
 class statistic_page(tk.Frame):
 
