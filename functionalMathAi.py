@@ -12,6 +12,8 @@ import time
         -font size
         -TITLE FOR APP
     3) Extras
+        -make list of problems into 2d array
+        -read and write out to file for consistency 
         -timer display
         -Progress bar
 '''
@@ -219,9 +221,8 @@ class answer_page(tk.Frame):
         start_time=problem_page.start_time
         time_elapsed=time.time()-start_time
 
-        #print('problem count',answer_page.problem_count)
         answer_page.problem_count+=1
-        if answer_page.problem_count>=problem_page.number_problems:
+        if answer_page.problem_count==problem_page.number_problems:
             answer_page.repeat_button.config(command=lambda:
                 statistic_page.controller.show_and_update_frame('statistic_page'))
 
@@ -252,7 +253,7 @@ class statistic_page(tk.Frame):
         statistic_page.response.pack()
 
     def update(self):
-        score=answer_page.count_correct_solutions*100/problem_page.number_problems
+        score=(answer_page.count_correct_solutions/problem_page.number_problems)*100
         statistic_page.response.config(text="Your score is "+str( round(score,2) )+"%")
 
 if __name__ == "__main__":
