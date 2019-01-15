@@ -86,14 +86,19 @@ class StartPage(tk.Frame):
         self.controller = controller
 
         chalkboard = ImageTk.PhotoImage(Image.open("chalkboard.jpg"))
-        background = tk.Label(self, compound=tk.CENTER, text="Welcome to CHALKBOARD", font=(controller.title_font,40),
-                              image=chalkboard, borderwidth=0, fg='white')
-        background.image=chalkboard
-        background.pack()
+        background = tk.Label(self, image=chalkboard)
+        background.image = chalkboard
+        background.place(x=0,y=0,relwidth=1,relheight=1)
 
-        button1 = tk.Button(self, text="Go to Problem One",
-                            command=lambda: controller.show_and_update_frame("problem_page"))
-        button1.pack()
+        intro = tk.Label(self, text="Welcome to Productive!", font=(controller.title_font,40),
+                         borderwidth=0,fg="white",bg="#2d4630")
+        intro.image = chalkboard
+        #intro.pack()
+        intro.place(x=80,y=20)
+
+        start_button = tk.Button(self, text="Begin!", command=lambda: controller.show_and_update_frame("problem_page"),
+                                 bd=0)
+        start_button.place(x=280,y=365)
 
 
 class problem_page(tk.Frame):
@@ -268,8 +273,9 @@ class statistic_page(tk.Frame):
 
 if __name__ == "__main__":
     app = Application()
-    app.geometry("700x500")
 
-    app.title("Chalkboard")
+    app.geometry("599x400")
+    app.resizable(False,False)
+    app.title("Productive-the multiplication app")
 
     app.mainloop()
