@@ -1,11 +1,13 @@
 import tkinter as tk
-from tkinter import font  as tkfont
+from tkinter import font as tkfont
+import PIL as pillow
+from PIL import Image,ImageTk
 import random
 import time
 
 '''
     Project Plan:
-    1) Working model
+    1) Working model - done 
     2) Pictures, sounds, bells, and whistles. Colors fun stuff
         -Font
         -font Colors
@@ -21,6 +23,11 @@ import time
 '''
     General Notes:
     -bind <return> to to grade button to do same thing as hitting button
+    -when make file to store user data, make it private from them!
+    
+    -buttons can have images too!!!
+    
+    -reuse same image on all pages for ease of consistent size
 '''
 
 
@@ -71,15 +78,18 @@ class Application(tk.Tk):
     def get_page(self,page_class):
         return self.frames[page_class]
 
-
 class StartPage(tk.Frame):
+    chalkboard='reference to image'
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, background="saddle brown")
         self.controller = controller
 
-        label = tk.Label(self, text="This is the start page", font=controller.title_font)
-        label.pack(side="top", fill="x", pady=10)
+        chalkboard = ImageTk.PhotoImage(Image.open("chalkboard.jpg"))
+        background = tk.Label(self, compound=tk.CENTER, text="Welcome to CHALKBOARD", font=(controller.title_font,40),
+                              image=chalkboard, borderwidth=0, fg='white')
+        background.image=chalkboard
+        background.pack()
 
         button1 = tk.Button(self, text="Go to Problem One",
                             command=lambda: controller.show_and_update_frame("problem_page"))
@@ -249,7 +259,7 @@ class statistic_page(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        statistic_page.response=tk.Label(self,text="score not displaying")
+        statistic_page.response=tk.Label(self,text="score not displaying",font=controller.title_font)
         statistic_page.response.pack()
 
     def update(self):
@@ -258,5 +268,8 @@ class statistic_page(tk.Frame):
 
 if __name__ == "__main__":
     app = Application()
-    app.geometry("600x400")
+    app.geometry("700x500")
+
+    app.title("Chalkboard")
+
     app.mainloop()
