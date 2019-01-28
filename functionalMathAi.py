@@ -296,3 +296,4 @@ if __name__ == "__main__":
     app.title(name+"- the multiplication app")
 
     app.mainloop()
+
