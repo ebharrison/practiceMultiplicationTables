@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import font as tkfont
-import PIL as pillow
 from PIL import Image, ImageTk
 import random
 import time
@@ -30,6 +29,8 @@ import time
     -reuse same image on all pages for ease of consistent size
 '''
 
+blackboard_green = "#2d4630"
+name = "Productivity "
 
 def display_background(controller, frame):
     chalkboard = controller.chalkboard
@@ -99,13 +100,15 @@ class StartPage(tk.Frame):
 
         display_background(controller, self)
 
-        intro = tk.Label(self, text="Welcome to Productive!", font=(controller.title_font, 40),
-                         borderwidth=0, fg="white", bg="#2d4630")
-        intro.place(x=80, y=20)
+        intro = tk.Label(self, text="Welcome to "+name+"!", font=(controller.title_font, 40),
+                         borderwidth=0, fg="white", bg=blackboard_green)
+        intro.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        start_button = tk.Button(self, text="Begin!", command=lambda: controller.show_and_update_frame("problem_page"),
+        start_button = tk.Button(self, highlightbackground=blackboard_green, text="Ready!",
+                                 command=lambda: controller.show_and_update_frame("problem_page"),
                                  bd=0)
-        start_button.place(x=280, y=365)
+
+        start_button.place(x=280, y=250)
 
 
 class problem_page(tk.Frame):
@@ -278,7 +281,7 @@ class statistic_page(tk.Frame):
         display_background(controller, self)
 
         statistic_page.response = tk.Label(self, text="score not displaying", font=controller.title_font)
-        statistic_page.response.pack()
+        statistic_page.response.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
 
     def update(self):
         score = (answer_page.count_correct_solutions / problem_page.number_problems) * 100
@@ -290,6 +293,6 @@ if __name__ == "__main__":
 
     app.geometry("599x400")
     app.resizable(False, False)
-    app.title("Productive-the multiplication app")
+    app.title(name+"- the multiplication app")
 
     app.mainloop()
