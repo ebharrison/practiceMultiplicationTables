@@ -54,7 +54,7 @@ class Application(tk.Tk):
     def show_and_update_frame(self, page_name):
         '''Show and update a frame for the given page name'''
         frame = self.frames[page_name]
-        frame.update()
+        frame.updatePage()
         frame.tkraise()
         self.current_page = page_name
 
@@ -130,10 +130,11 @@ class start_page(tk.Frame):
 
         intro = tk.Label(self, text="Welcome to " + name + "!", font=(controller.title_font, 40),
                          borderwidth=0, fg="white", bg=blackboard_green)
-        intro.pack(side="top", pady=30)
+        intro.pack(side="top", pady=14)
 
         start_button = tk.Button(self, highlightbackground=blackboard_green, text="Ready!",
-                                 command=lambda: controller.show_and_update_frame("problem_page"))
+                    command=lambda: controller.show_and_update_frame("problem_page"), font=(controller.title_font, 40),
+                     borderwidth=0, bg=blackboard_green)
 
         start_button.pack(side="bottom", pady=25)
 
@@ -184,9 +185,17 @@ class problem_page(tk.Frame):
         try:
             if ans:
                 int(ans)
-            problem_page.error_box.config(text='')
+
+                problem_page.error_box.pack_forget()
+                problem_page.error_box.config(text='')
+
+                problem_page.error_box.pack()
+
+                print('got here')
         except ValueError:
             problem_page.error_box.config(text='invalid input')
+            problem_page.error_box.pack(side="top", pady=12)
+
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -196,17 +205,20 @@ class problem_page(tk.Frame):
 
         question = tk.Label(self, text="What is the product of", font=(controller.title_font, 40),
                             borderwidth=0, fg="white", bg=blackboard_green)
-        question.pack(side="top", pady=12)
+        question.pack(side="top", pady=14)
 
         '''
             One label is used to display all problems. The text on the label is
             changed every time to display the new problem
         '''
-        problem_page.prompt = tk.Label(self, text='error:problem not displaying', font=controller.title_font)
-        problem_page.prompt.pack(side="top", fill="x", pady=10)
+        problem_page.prompt = tk.Label(self, text='error:problem not displaying', font=(controller.title_font, 40),
+                            borderwidth=0, fg="white", bg=blackboard_green)
+        problem_page.prompt.pack(side="top", pady=12)
 
-        problem_page.error_box = tk.Label(self, text='', font=controller.title_font)
-        problem_page.error_box.pack(side="top", fill="x", pady=10)
+        problem_page.error_box = tk.Label(self, font=(controller.title_font, 40),
+                            borderwidth=0, height = 0, width = 0, fg="white", bg=blackboard_green)
+        problem_page.error_box.pack(side="top", fill='none', pady=12)
+        problem_page.error_box.pack_forget()
 
         problem_page.user_answer = tk.StringVar()
         user_answer = problem_page.user_answer
@@ -228,7 +240,7 @@ class problem_page(tk.Frame):
         submit_button = tk.Button(self, text="Grade", command=lambda: controller.show_and_update_frame("answer_page"))
         submit_button.pack()
 
-    def update(self):
+    def updatePage(self):
         problem_page.user_answer = tk.StringVar()
         problem_page.user_answer.trace('w', problem_page.validate)
 
@@ -258,17 +270,19 @@ class answer_page(tk.Frame):
         display_background(controller, self)
 
         # two labels
-        answer_page.response = tk.Label(self, text="response")
-        answer_page.response.pack()
+        answer_page.response = tk.Label(self, text="response", font=(controller.title_font, 40),
+                            borderwidth=0, fg="white", bg=blackboard_green)
+        answer_page.response.pack(pady=14)
 
-        answer_page.solution = tk.Label(self, text="solution")
-        answer_page.solution.pack()
+        answer_page.solution = tk.Label(self, text="solution", font=(controller.title_font, 40),
+                            borderwidth=0, fg="white", bg=blackboard_green)
+        answer_page.solution.pack(pady=14)
 
-        answer_page.repeat_button = tk.Button(self, text="Again",
-                                              command=lambda: controller.show_and_update_frame("problem_page"))
-        answer_page.repeat_button.pack()
+        answer_page.repeat_button = tk.Button(self, text="Again", command=lambda: controller.show_and_update_frame("problem_page"),
+                 font=(controller.title_font, 40), borderwidth=0, bg=blackboard_green, highlightbackground=blackboard_green)
+        answer_page.repeat_button.pack(pady=14)
 
-    def update(self):
+    def updatePage(self):
         problem = problem_page.format_problem(problem_page.problem)
 
         user_answer = None
@@ -310,10 +324,11 @@ class statistic_page(tk.Frame):
 
         display_background(controller, self)
 
-        statistic_page.response = tk.Label(self, text="score not displaying", font=controller.title_font)
+        statistic_page.response = tk.Label(self, text="score not displaying", font=(controller.title_font, 40),
+               borderwidth=0, bg=blackboard_green, highlightbackground=blackboard_green)
         statistic_page.response.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-    def update(self):
+    def updatePage(self):
         score = (answer_page.count_correct_solutions / problem_page.number_problems) * 100
         statistic_page.response.config(text="Your score is " + str(round(score, 2)) + "%")
 
